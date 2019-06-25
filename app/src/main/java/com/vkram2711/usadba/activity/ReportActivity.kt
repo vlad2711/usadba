@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.vkram2711.usadba.R
 import com.vkram2711.usadba.adapters.ViewPagerAdapter
 import com.vkram2711.usadba.models.Job
+import com.vkram2711.usadba.utils.ExcelUtils
 import kotlinx.android.synthetic.main.activity_report.*
 import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.Subscribe
@@ -28,6 +29,11 @@ class ReportActivity : AppCompatActivity() {
 
         viewPager.adapter = ViewPagerAdapter(supportFragmentManager)
         tabLayout.setupWithViewPager(viewPager)
+
+        save.setOnClickListener {
+            ExcelUtils().generateSecondReport(ExcelUtils().createWorkbook("jobs.xls")!!)
+            finish()
+        }
     }
 
 }

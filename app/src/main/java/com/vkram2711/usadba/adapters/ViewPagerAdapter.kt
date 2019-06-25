@@ -14,7 +14,7 @@ import org.greenrobot.eventbus.ThreadMode
 class ViewPagerAdapter(fm: FragmentManager): FragmentPagerAdapter(fm) {
 
     override fun getCount(): Int {
-        return Utils.additionalCategoriesSize.size
+        return Utils.additionalJobs.size
     }
 
     override fun getItem(position: Int): Fragment {

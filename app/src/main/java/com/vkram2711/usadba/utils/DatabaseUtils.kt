@@ -44,7 +44,7 @@ class DatabaseUtils {
         }
 
         fun getJobs(type: String) {
-            Utils.jobs = ArrayList()
+            Utils.jobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
             val database = FirebaseDatabase.getInstance()
             val myRef = database.getReference(type)
 
@@ -70,11 +70,10 @@ class DatabaseUtils {
                             Utils.getCategory(item["Раздел"]!!)
                         )
 
-                        Utils.jobs.add(job)
+                        Utils.jobs[job.category].add(job)
                         Log.d(TAG, Utils.jobs.size.toString())
                     }
 
-                    Utils.getSizeForCategory()
                 }
             })
         }

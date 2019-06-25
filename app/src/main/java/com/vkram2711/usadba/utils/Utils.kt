@@ -4,10 +4,8 @@ import com.vkram2711.usadba.models.Job
 
 class Utils {
     companion object{
-        var jobs = ArrayList<Job>()
+        var jobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
         var additionalJobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
-        var categoriesSize = intArrayOf(0,0,0,0,0,0)
-        var additionalCategoriesSize = intArrayOf(0,0,0,0,0,0)
         lateinit var bts: Map<String, Any>
 
 
@@ -39,11 +37,5 @@ class Utils {
             }
         }
 
-        fun getSizeForCategory(){
-            categoriesSize = intArrayOf(0,0,0,0,0,0)
-            for (i in 0 until jobs.size) {
-                categoriesSize[jobs[i].category]++
-            }
-        }
     }
 }

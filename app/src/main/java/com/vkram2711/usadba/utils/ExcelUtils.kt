@@ -183,11 +183,14 @@ class ExcelUtils {
                     Label(
                         7,
                         i + 1,
-                        (Integer.parseInt(Utils.additionalJobs[i][j].price) * Integer.parseInt(Utils.additionalJobs[i][j].count)).toString()
+                        (Utils.additionalJobs[i][j].price.replace(',', '.').replace(" ", "").toDouble() * Integer.parseInt(Utils.additionalJobs[i][j].count)).toString()
                     )
                 )
             }
         }
+
+        wb.write()
+        wb.close()
     }
 
 

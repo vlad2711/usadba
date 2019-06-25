@@ -26,12 +26,12 @@ class FormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private fun userInterfaceInit(){
 
-        val jobs = arrayOfNulls<String>(Utils.categoriesSize[category])
+        val jobs = arrayOfNulls<String>(Utils.jobs[category].size)
         Log.d(TAG, Utils.jobs.size.toString())
         var k = 0
-        for (i in 0 until Utils.jobs.size) {
-            if(category == Utils.jobs[i].category) {
-                jobs[k] = Utils.jobs[i].jobTitle
+        for (i in 0 until Utils.jobs[category].size) {
+            if(category == Utils.jobs[category][i].category) {
+                jobs[k] = Utils.jobs[category][i].jobTitle
                 k++
             }
         }
@@ -42,7 +42,7 @@ class FormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         add.setOnClickListener {
             if(jobPosition >= 0){
-                val j = Utils.jobs[jobPosition]
+                val j = Utils.jobs[category][jobPosition]
                 val job = Job(j.number, j.price, j.jobTitle, count.text.toString(), j.unit, j.category)
                 Utils.additionalJobs[category].add(job)
                 EventBus.getDefault().post("event")
