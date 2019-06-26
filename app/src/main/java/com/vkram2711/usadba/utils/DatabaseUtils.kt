@@ -2,6 +2,7 @@ package com.vkram2711.usadba.utils
 
 import android.net.Uri
 import android.util.Log
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.database.*
 import com.vkram2711.usadba.callback.OnDataReceivedCallback
 import com.vkram2711.usadba.models.Job
@@ -12,6 +13,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.gson.Gson
 import com.vkram2711.usadba.models.ActBufferModel
 import java.io.ByteArrayOutputStream
+import java.lang.Exception
 import java.nio.charset.Charset
 
 
@@ -87,7 +89,22 @@ class DatabaseUtils {
 
         fun uploadFileToStorage(act: ActBufferModel){
             val storage = FirebaseStorage.getInstance()
-            val storageRef = storage.reference.child("buffer/${act.category}/${act.region}/${act.id}-${Utils.getDate()}.json")
+            val storageRef = storage.reference.child("buffer/${act.category}/${act.id}-${Utils.getDate()}.json")
+            val database = FirebaseDatabase.getInstance()
+            val reg = database.getReference("buffer/${act.category}")
+            var updated = false
+            reg.addValueEventListener(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                    p0.toException().printStackTrace()
+                }
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(!updated) {
+                        val s = reg.child((snapshot.childrenCount).toString()).setValue("${act.id}-${Utils.getDate()}")
+                        s.addOnFailureListener { it.printStackTrace() }
+                        updated = true
+                    }
+                }
+            })
 
             val uploadTask = storageRef.putBytes(Gson().toJson(act).toByteArray(Charset.forName("UTF-8")))
             uploadTask.addOnFailureListener {
@@ -96,6 +113,23 @@ class DatabaseUtils {
                 Log.d(TAG, "success")
             }
 
+        }
+
+        fun getFiles(category: String, onDataReceivedCallback: OnDataReceivedCallback){
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference.child("buffer/")
+            val database = FirebaseDatabase.getInstance()
+            val reg = database.getReference("buffer/$category")
+            reg.addValueEventListener(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                    p0.toException().printStackTrace()
+                }
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Utils.reports = snapshot.value as ArrayList<String>
+
+                    onDataReceivedCallback.onReceived(null)
+                }
+            })
         }
     }
 }

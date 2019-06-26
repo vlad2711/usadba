@@ -69,6 +69,10 @@ class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             val intent = Intent(this, ReportActivity::class.java)
             startActivity(intent)
         }
+
+        report.setOnClickListener {
+            startActivity(Intent(this@NewReportActivity, ReportMergeActivity::class.java))
+        }
     }
 
     override fun onReceived(data: Map<String, Any>?) {

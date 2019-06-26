@@ -10,6 +10,7 @@ class Utils {
     companion object{
         var jobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
         var additionalJobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
+        lateinit var reports: ArrayList<String>
         lateinit var bts: Map<String, Any>
 
 
