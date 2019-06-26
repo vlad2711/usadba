@@ -3,12 +3,12 @@ package com.vkram2711.usadba.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.vkram2711.usadba.R
 import com.vkram2711.usadba.adapters.ReportAdapter
 import com.vkram2711.usadba.models.Job

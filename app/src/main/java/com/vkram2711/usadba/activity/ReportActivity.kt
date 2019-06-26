@@ -1,16 +1,12 @@
 package com.vkram2711.usadba.activity
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.vkram2711.usadba.R
 import com.vkram2711.usadba.adapters.ViewPagerAdapter
-import com.vkram2711.usadba.models.Job
 import com.vkram2711.usadba.utils.ExcelUtils
 import kotlinx.android.synthetic.main.activity_report.*
-import org.greenrobot.eventbus.ThreadMode
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.EventBus
 
 class ReportActivity : AppCompatActivity() {
 

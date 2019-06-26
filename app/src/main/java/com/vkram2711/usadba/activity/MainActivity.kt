@@ -1,8 +1,8 @@
 package com.vkram2711.usadba.activity
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.vkram2711.usadba.R
 import com.vkram2711.usadba.callback.OnDataReceivedCallback
 import com.vkram2711.usadba.utils.DatabaseUtils

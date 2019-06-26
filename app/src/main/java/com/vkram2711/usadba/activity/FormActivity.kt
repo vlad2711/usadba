@@ -1,11 +1,11 @@
 package com.vkram2711.usadba.activity
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import com.vkram2711.usadba.R
 import com.vkram2711.usadba.models.Job
 import com.vkram2711.usadba.utils.DatabaseUtils

@@ -1,10 +1,10 @@
 package com.vkram2711.usadba.adapters
 
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.vkram2711.usadba.R
 import com.vkram2711.usadba.utils.Utils
 import kotlinx.android.synthetic.main.report_item.view.*

@@ -1,9 +1,8 @@
 package com.vkram2711.usadba.adapters
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.ViewPager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import com.vkram2711.usadba.fragments.ReportsFragment
 import com.vkram2711.usadba.models.Job
 import com.vkram2711.usadba.utils.Utils

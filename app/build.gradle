@@ -6,7 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 28
+
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.vkram2711.usadba"
         minSdkVersion 21
@@ -37,10 +38,15 @@ dependencies {
     implementation "android.arch.navigation:navigation-ui-ktx:$version_navigation"
 
     //firebase
-    implementation 'com.google.firebase:firebase-database:16.0.4'
+    implementation 'com.google.firebase:firebase-database:18.0.0'
+    implementation 'com.google.firebase:firebase-storage:18.0.0'
+
 
     //excel
     implementation 'net.sourceforge.jexcelapi:jxl:2.6.12'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+
 }

@@ -1,11 +1,18 @@
 package com.vkram2711.usadba.utils
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.database.*
 import com.vkram2711.usadba.callback.OnDataReceivedCallback
 import com.vkram2711.usadba.models.Job
 import java.util.*
 import kotlin.collections.ArrayList
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.gson.Gson
+import com.vkram2711.usadba.models.ActBufferModel
+import java.io.ByteArrayOutputStream
+import java.nio.charset.Charset
 
 
 class DatabaseUtils {
@@ -76,6 +83,21 @@ class DatabaseUtils {
 
                 }
             })
+        }
+
+        fun uploadFileToStorage(region: String, bts: Int, act: ActBufferModel){
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference.child("buffer/$region/$bts-${Utils.getDate()}.json")
+
+
+            val uploadTask = storageRef.putBytes(Gson().toJson(act).toByteArray(Charset.forName("UTF-8")))
+            uploadTask.addOnFailureListener {
+                it.printStackTrace()
+            }.addOnSuccessListener {
+                // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                // ...
+            }
+
         }
     }
 }

@@ -1,6 +1,10 @@
 package com.vkram2711.usadba.utils
 
 import com.vkram2711.usadba.models.Job
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class Utils {
     companion object{
@@ -37,5 +41,10 @@ class Utils {
             }
         }
 
+        fun getDate(): String{
+            val c = Calendar.getInstance().time
+            val df = SimpleDateFormat("dd-MMM-yyyy", Locale.ROOT)
+            return df.format(c)
+        }
     }
 }
