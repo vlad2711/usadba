@@ -21,7 +21,7 @@ class DatabaseUtils {
 
         fun getBts(id: Int, onDataReceivedCallback: OnDataReceivedCallback) {
             val database = FirebaseDatabase.getInstance()
-            val myRef = database.getReference("bts")
+            val myRef = database.getReference("bts/bts")
 
             myRef.addValueEventListener(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
@@ -85,17 +85,15 @@ class DatabaseUtils {
             })
         }
 
-        fun uploadFileToStorage(region: String, bts: Int, act: ActBufferModel){
+        fun uploadFileToStorage(act: ActBufferModel){
             val storage = FirebaseStorage.getInstance()
-            val storageRef = storage.reference.child("buffer/$region/$bts-${Utils.getDate()}.json")
-
+            val storageRef = storage.reference.child("buffer/${act.category}/${act.region}/${act.id}-${Utils.getDate()}.json")
 
             val uploadTask = storageRef.putBytes(Gson().toJson(act).toByteArray(Charset.forName("UTF-8")))
             uploadTask.addOnFailureListener {
                 it.printStackTrace()
             }.addOnSuccessListener {
-                // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                // ...
+                Log.d(TAG, "success")
             }
 
         }

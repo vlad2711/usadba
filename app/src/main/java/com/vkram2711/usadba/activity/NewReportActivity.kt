@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.vkram2711.usadba.Constants
 import com.vkram2711.usadba.callback.OnDataReceivedCallback
+import com.vkram2711.usadba.models.ActBufferModel
 import com.vkram2711.usadba.utils.DatabaseUtils
 import com.vkram2711.usadba.utils.ExcelUtils
 import com.vkram2711.usadba.utils.Utils
@@ -22,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_new_report.*
 
 
 class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, OnDataReceivedCallback {
-    private val jobs = arrayOf("Ревизия", "ТО", "ТО+Геодезия", "Геодезия", "Ревизия+Геодезич")
+    private val jobs = arrayOf("Ревизия", "ТО", "ТО+Геодезия", "Геодезия", "Ревизия+Геодезия")
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
     }
@@ -64,21 +65,41 @@ class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         start.setOnClickListener {
             DatabaseUtils.getBts(Integer.parseInt(id.text.toString()), this@NewReportActivity)
             DatabaseUtils.getJobs("north")
+
             val intent = Intent(this, ReportActivity::class.java)
             startActivity(intent)
         }
     }
 
     override fun onReceived(data: Map<String, Any>?) {
+
+        DatabaseUtils.uploadFileToStorage(ActBufferModel(
+            data!!["№ БТС"].toString().toInt(),
+            data["Адрес"].toString(),
+            getPrice(job_type.selectedItemPosition, data),
+            data["Раздел"].toString(),
+            data["Район"].toString()
+        ))
+
     }
 
+    private fun getPrice(position: Int, data: Map<String, Any>): Double{
+        return when(position){
+            0 -> data["Ревизия"].toString().toDouble()
+            1 -> data["ТО"].toString().toDouble()
+            2 -> data["ТО"].toString().toDouble() + data["Геодезия"].toString().toDouble()
+            3 -> data["Геодезия"].toString().toDouble()
+            4 -> data["Геодезия"].toString().toDouble() + data["Ревизия"].toString().toDouble()
+            else -> 0.0
+        }
+
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == Constants.PERMISSION_REQUEST_CODE) {
             userInterfaceInit()
-            ExcelUtils().generateFirstReport(ExcelUtils().createWorkbook("rep.xls")!!)
-
+           // ExcelUtils().generateFirstReport(ExcelUtils().createWorkbook("rep.xls")!!)
         }
     }
     @RequiresApi(Build.VERSION_CODES.M)
