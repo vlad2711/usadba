@@ -1,5 +1,6 @@
 package com.vkram2711.usadba.utils
 
+import com.vkram2711.usadba.models.BufferReportModel
 import com.vkram2711.usadba.models.Job
 import java.text.SimpleDateFormat
 import java.util.*
@@ -10,7 +11,7 @@ class Utils {
     companion object{
         var jobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
         var additionalJobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
-        lateinit var reports: ArrayList<String>
+        lateinit var reports: Array<BufferReportModel?>
         lateinit var bts: Map<String, Any>
 
 

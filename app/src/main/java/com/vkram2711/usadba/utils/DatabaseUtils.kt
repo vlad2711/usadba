@@ -12,6 +12,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.gson.Gson
 import com.vkram2711.usadba.models.ActBufferModel
+import com.vkram2711.usadba.models.BufferReportModel
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.nio.charset.Charset
@@ -125,8 +126,11 @@ class DatabaseUtils {
                     p0.toException().printStackTrace()
                 }
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Utils.reports = snapshot.value as ArrayList<String>
-
+                    val reports =  snapshot.value as ArrayList<String>
+                    Utils.reports = Array(reports.size){null}
+                    for(i in 0 until reports.size){
+                        Utils.reports[i] = BufferReportModel(reports[i])
+                    }
                     onDataReceivedCallback.onReceived(null)
                 }
             })

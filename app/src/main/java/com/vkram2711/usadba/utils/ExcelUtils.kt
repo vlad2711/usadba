@@ -5,8 +5,14 @@ import jxl.Workbook
 import jxl.write.WritableWorkbook
 import android.os.Environment.getExternalStorageDirectory
 import android.util.Log
+import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
+import com.vkram2711.usadba.callback.OnActCreationFinished
+import com.vkram2711.usadba.models.ActBufferModel
 import jxl.WorkbookSettings
 import jxl.format.Alignment
+import jxl.format.Border
+import jxl.format.BorderLineStyle
 import jxl.format.CellFormat
 import jxl.write.Label
 import jxl.write.WritableCellFormat
@@ -16,9 +22,19 @@ import java.io.IOException
 
 
 class ExcelUtils {
+    private val TAG = this::class.java.name
 
     fun generateFirstReport(wb: WritableWorkbook){
         val sheet = wb.createSheet("Акт 1", 0)
+
+        for (x in 0 until 30) {
+            val cell = sheet.getColumnView(x)
+            cell.size = 900
+            sheet.setColumnView(x, cell)
+        }
+
+
+
         sheet.addCell(Label(19,1, "Приложение 6"))
         sheet.addCell(Label(19,2, "к договору № D190098417   от 16.04.2019 г."))
         sheet.addCell(Label(19,3, "к Заказу № 1/8417-2019   от 06.05.2019 г."))
@@ -62,7 +78,13 @@ class ExcelUtils {
         sheet.addCell(Label(2,24, "№ D190108417  от 16.04.2019 г."))
         sheet.addCell(Label(20,21, "«_____»____________ 2019 г."))
 
-        sheet.addCell(Label(1,25, "1.  Согласно Методики приемки работ, предусмотренной п.4.1. Договора и приложением 5 к Договору проверено качество работ на " + ". Качество работ проверено полномочным представителем Заказчика в присутствии Подрядчика и соответствует требованиям и условиям Договора."))
+        sheet.mergeCells(1,22,3,22)
+        sheet.mergeCells(1,23,3,23)
+        sheet.mergeCells(1,24,3,24)
+        sheet.mergeCells(4,22,17,22)
+        sheet.mergeCells(4,23,17,23)
+        sheet.mergeCells(4,24,17,24)
+
         sheet.addCell(Label(1,26, "2.  В соответствии с требованиями Договора Подрядчиком представлены следующие документы: акты ТО АМС, фотоотчеты"))
         sheet.addCell(Label(1,27, "3.  За выполненную работу в соответствии с разделами 4, 5 и 6 настоящего Договора Заказчик выплачивает Подрядчику стоимость работ:"))
         sheet.addCell(Label(1,28, "3.1   За техническое обслуживание АО:"))
@@ -75,6 +97,10 @@ class ExcelUtils {
         sheet.addCell(Label(1,29, "Сумма:"))
         sheet.addCell(Label(1,31, "плюс НДС 20% в сумме:"))
         sheet.addCell(Label(1,33, "Итого с учетом НДС 20% сумма:"))
+
+        sheet.mergeCells(1, 29, 9, 29)
+        sheet.mergeCells(1, 31, 9, 31)
+        sheet.mergeCells(1, 33, 9, 33)
 
         sheet.addCell(Label(1,35, "3.2   За текущий ремонт АО:"))
         sheet.addCell(Label(1,36, "\"Сумма – ____________ (_____________________________________________) рублей,\n" +
@@ -114,9 +140,9 @@ class ExcelUtils {
         sheet.addCell(Label(1,64, "Заказчик:"))
         sheet.addCell(Label(1,65, "Подрядчик:"))
         sheet.addCell(Label(1,66, "Договор:"))
-        sheet.addCell(Label(2,64, "\"КОПЫТА\""))
-        sheet.addCell(Label(2,65, "ООО «РОМАШКА»"))
-        sheet.addCell(Label(2,66, "№  D190098417 от 16.04.2019 г."))
+        sheet.addCell(Label(4,64, "\"КОПЫТА\""))
+        sheet.addCell(Label(4,65, "ООО «РОМАШКА»"))
+        sheet.addCell(Label(4,66, "№  D190098417 от 16.04.2019 г."))
 
         sheet.addCell(Label(1,68, "РАСШИФРОВКА  СТОИМОСТИ", centerAlignment))
         sheet.addCell(Label(1,69, "к Акту № 00/Ю-2019-РЕВ приемки-сдачи выполненных работ", centerAlignment))
@@ -128,24 +154,103 @@ class ExcelUtils {
         sheet.mergeCells(1, 70,25,70)
         sheet.mergeCells(1, 71,25,71)
 
-        sheet.addCell(Label(1,73, "№ п/п"))
-        sheet.addCell(Label(2,73, "№ БС,  Адрес объектов ОАО МТС (виды работ)"))
-        sheet.addCell(Label(3,73, "Решение о приемке"))
-        sheet.addCell(Label(4,73, "Стоимость выполненных работ (без НДС) (в руб.)"))
-        sheet.addCell(Label(5,73, "Стоимость принятых работ                (без НДС)              (в руб.)"))
-        sheet.addCell(Label(2,74, "ХХХХХХХХХХ район"))
+        val border = WritableCellFormat()
+        border.setBorder(Border.ALL, BorderLineStyle.MEDIUM)
+        sheet.addCell(Label(1,73, "№ \nп/п", border))
+        sheet.addCell(Label(2,73, "№ БС,  Адрес объектов ОАО МТС (виды работ)", border))
+        sheet.addCell(Label(16,73, "Решение о приемке", border))
+        sheet.addCell(Label(19,73, "Стоимость выполненных работ \n (без НДС) (в руб.)", border))
+        sheet.addCell(Label(25,73, "Стоимость принятых работ \n (без НДС)(в руб.)", border))
+        sheet.addCell(Label(2,74, "ХХХХХХХХХХ район", border))
 
         sheet.mergeCells(2, 73, 15, 73)
         sheet.mergeCells(16, 73, 18, 73)
         sheet.mergeCells(19, 73, 24, 73)
         sheet.mergeCells(25, 73, 27, 73)
 
-        sheet.mergeCells(2, 74, 15, 74)
+        sheet.mergeCells(1, 74, 33, 74)
         sheet.mergeCells(16, 74, 18, 74)
         sheet.mergeCells(19, 74, 24, 74)
         sheet.mergeCells(25, 74, 27, 74)
-        wb.write()
-        wb.close()
+
+        var startRow = 75
+        var rowCount = 1
+
+        val gson = Gson()
+        sheet.addCell(Label(2, startRow, rowCount.toString()))
+
+        val queue = ArrayList<String>()
+        val bts = ArrayList<Int>()
+        var sum = 0.0
+        val onActCreationFinished = object: OnActCreationFinished{
+            override fun onFinished(wb: WritableWorkbook, queue: ArrayList<String>) {
+                Log.d(TAG, queue.size.toString())
+                if(queue.isEmpty()){
+                    var ids = ""
+                    for(i in 0 until bts.size){
+                        if(i != 0) ids += ","
+                        ids+= bts[i]
+                    }
+                    val border = WritableCellFormat()
+                    border.setBorder(Border.ALL, BorderLineStyle.MEDIUM)
+                    sheet.addCell(Label(1,25, "1.  Согласно Методики приемки работ, предусмотренной п.4.1. Договора и приложением 5 к Договору проверено качество работ на $ids. \nКачество работ проверено полномочным представителем Заказчика в присутствии Подрядчика и соответствует требованиям и условиям Договора."))
+                    sheet.addCell(Label(1, startRow, "ИТОГО ЗА ТО:", border))
+                    sheet.addCell(Label(20, startRow, sum.toString(), border))
+                    sheet.addCell(Label(26, startRow, sum.toString(), border))
+                    sheet.mergeCells(20, startRow, 25, startRow + 1)
+                    sheet.mergeCells(26, startRow, 29, startRow + 1)
+                    sheet.mergeCells(1 , startRow,19, startRow + 1)
+
+                    sheet.addCell(Label(10,29, sum.toString()))
+                    sheet.addCell(Label(10,31, (sum*0.2).toString()))
+                    sheet.addCell(Label(10,33, (sum + sum*0.2).toString()))
+
+                    wb.write()
+                    wb.close()
+                }
+            }
+
+        }
+        for(i in 0 until Utils.reports.size){
+            if(Utils.reports[i]!!.selected){
+                queue.add(Utils.reports[i]!!.name)
+                val storageRef = FirebaseStorage.getInstance().reference.child("buffer/СЕВЕР/${Utils.reports[i]!!.name}.json")
+
+                storageRef.getBytes(1024*1024).addOnSuccessListener {
+                    val model = gson.fromJson(it.toString(Charsets.UTF_8), ActBufferModel::class.java)
+                    Log.d(TAG, it.toString(Charsets.UTF_8))
+
+
+                    sheet.addCell(Label(1, startRow, rowCount.toString(), border))
+                    sheet.addCell(Label(2, startRow, "БС-${model.id}", border))
+                    sheet.addCell(Label(4, startRow, model.address + "," + model.region, border))
+                    sheet.addCell(Label(20, startRow, model.price.toString(), border))
+                    sheet.addCell(Label(26, startRow, model.price.toString(), border))
+                    sheet.addCell(Label(2, startRow + 1, model.job, border))
+                    sheet.addCell(Label(16, startRow, "", border))
+                    sheet.mergeCells(1, startRow, 1, startRow + 1)
+                    sheet.mergeCells(2, startRow, 3, startRow)
+                    sheet.mergeCells(4, startRow, 15, startRow)
+                    sheet.mergeCells(16, startRow, 19, startRow + 1)
+                    sheet.mergeCells(20, startRow, 25, startRow + 1)
+                    sheet.mergeCells(26, startRow, 29, startRow + 1)
+                    sheet.mergeCells(2, startRow + 1, 15, startRow + 1)
+                    startRow += 2
+                    queue.remove(Utils.reports[i]!!.name)
+                    rowCount++
+
+                    sum += model.price
+                    bts.add(model.id)
+                    onActCreationFinished.onFinished(wb, queue)
+
+                }.addOnFailureListener {
+                    it.printStackTrace()
+                }
+
+            }
+        }
+
+
 
     }
 
@@ -164,9 +269,9 @@ class ExcelUtils {
 
         for (i in 0 until Utils.additionalJobs.size) {
             for(j in 0 until Utils.additionalJobs[i].size) {
+
                 sheet.addCell(Label(0, i + 1, Utils.bts["№ БТС"].toString()))
-                sheet.addCell(
-                    Label(
+                sheet.addCell(Label(
                         1,
                         i + 1,
                         Utils.removeSpecialSymbols(Utils.bts["Адрес"].toString()) + ", " + Utils.removeSpecialSymbols(
@@ -174,6 +279,7 @@ class ExcelUtils {
                         )
                     )
                 )
+
                 sheet.addCell(Label(2, i + 1, Utils.removeSpecialSymbols(Utils.bts["Тип АО"].toString())))
                 sheet.addCell(Label(3, i + 1, Utils.additionalJobs[i][j].jobTitle))
                 sheet.addCell(Label(4, i + 1, Utils.additionalJobs[i][j].unit))

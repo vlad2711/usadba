@@ -7,7 +7,15 @@
         android:layout_height="match_parent"
         tools:context=".activity.ReportMergeActivity">
 
+    <Button
+            android:text="Создать отчет"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/create_report" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"/>
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:id="@+id/buffer_report_list"/>
+            android:layout_height="match_parent" android:id="@+id/buffer_report_list">
+    </androidx.recyclerview.widget.RecyclerView>
 </androidx.constraintlayout.widget.ConstraintLayout>

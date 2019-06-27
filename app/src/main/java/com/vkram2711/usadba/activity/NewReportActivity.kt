@@ -82,7 +82,8 @@ class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             data["Адрес"].toString(),
             getPrice(job_type.selectedItemPosition, data),
             data["Раздел"].toString(),
-            data["Район"].toString()
+            data["Район"].toString(),
+            jobs[job_type.selectedItemPosition]
         ))
 
     }
