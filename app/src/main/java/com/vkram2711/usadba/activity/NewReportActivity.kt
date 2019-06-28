@@ -63,11 +63,13 @@ class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         })
 
         start.setOnClickListener {
-            DatabaseUtils.getBts(Integer.parseInt(id.text.toString()), this@NewReportActivity)
-            DatabaseUtils.getJobs("north")
+            if(id.text.isNotEmpty()) {
+                DatabaseUtils.getBts(Integer.parseInt(id.text.toString()), this@NewReportActivity)
+                DatabaseUtils.getJobs("north")
 
-            val intent = Intent(this, ReportActivity::class.java)
-            startActivity(intent)
+                val intent = Intent(this, ReportActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         report.setOnClickListener {

@@ -55,4 +55,27 @@
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"/>
+    <Button
+            android:text="Север"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/north" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/report"
+            android:background="#3F51C5" android:textColor="#FFFFFF"/>
+    <Button
+            android:text="ЮГ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/south" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/report"
+            android:background="#F44336" android:textColor="#FFFFFF"/>
+    <TextView
+            android:text="Север"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/district" app:layout_constraintStart_toEndOf="@+id/north"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toStartOf="@+id/south"
+            android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/south" app:layout_constraintTop_toTopOf="@+id/south"
+            android:textColor="#000000"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
