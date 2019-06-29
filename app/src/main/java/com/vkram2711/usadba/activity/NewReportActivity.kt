@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.AdapterView
 import com.vkram2711.usadba.R
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_new_report.*
 class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, OnDataReceivedCallback {
     private val jobs = arrayOf("Ревизия", "ТО", "ТО+Геодезия", "Геодезия", "Ревизия+Геодезия")
 
+    private var northState = true
     override fun onNothingSelected(parent: AdapterView<*>?) {
     }
 
@@ -49,6 +51,15 @@ class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         job_type.adapter = adapter
         job_type.onItemSelectedListener = this
 
+        district.text = "СЕВЕР"
+        north.setOnClickListener {
+            district.text = "СЕВЕР"
+            northState = true
+        }
+        south.setOnClickListener {
+            district.text = "ЮГ"
+            northState = false
+        }
         id.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -65,15 +76,20 @@ class NewReportActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         start.setOnClickListener {
             if(id.text.isNotEmpty()) {
                 DatabaseUtils.getBts(Integer.parseInt(id.text.toString()), this@NewReportActivity)
-                DatabaseUtils.getJobs("north")
+                DatabaseUtils.getJobs(if(northState) "north" else "south")
 
                 val intent = Intent(this, ReportActivity::class.java)
+                intent.putExtra("district", district.text.toString())
                 startActivity(intent)
+            } else{
+                Toast.makeText(this, "не введен номер БС", Toast.LENGTH_SHORT).show()
             }
         }
 
         report.setOnClickListener {
-            startActivity(Intent(this@NewReportActivity, ReportMergeActivity::class.java))
+            val intent = Intent(this@NewReportActivity, ReportMergeActivity::class.java)
+            intent.putExtra("district", district.text.toString())
+            startActivity(intent)
         }
     }
 

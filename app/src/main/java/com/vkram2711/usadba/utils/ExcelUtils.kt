@@ -8,6 +8,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.vkram2711.usadba.callback.OnActCreationFinished
 import com.vkram2711.usadba.models.ActBufferModel
+import com.vkram2711.usadba.models.BufferReportModel
 import jxl.WorkbookSettings
 import jxl.format.Alignment
 import jxl.format.Border
@@ -23,7 +24,7 @@ import kotlin.collections.ArrayList
 class ExcelUtils {
     private val TAG = this::class.java.name
 
-    fun generateFirstReport(wb: WritableWorkbook){
+    fun generateFirstReport(wb: WritableWorkbook, district: String, fileName: String){
         val year = Calendar.getInstance().get(Calendar.YEAR)
         val sheet = wb.createSheet("Акт 1", 0)
 
@@ -199,6 +200,8 @@ class ExcelUtils {
         val queue = ArrayList<String>()
         val bts = ArrayList<Int>()
         var sum = 0.0
+
+        val reps = ArrayList<ActBufferModel>()
         val onActCreationFinished = object: OnActCreationFinished{
             override fun onFinished(wb: WritableWorkbook, queue: ArrayList<String>) {
                 Log.d(TAG, queue.size.toString())
@@ -235,17 +238,22 @@ class ExcelUtils {
                     sheet.addCell(Label(29, startRow + 4, "_____________________ Кузин Н.К", alignmentRight))
                     sheet.addCell(Label(29, startRow + 8, "«_____»____________ $year г.", alignmentRight))
 
+                    generateAdditional(wb, reps, sum)
 
+                    DatabaseUtils.deleteFilesFromBuffer(district)
                     wb.write()
                     wb.close()
+
+                    DatabaseUtils.uploadFileToStorage(File(getExternalStorageDirectory().absolutePath + "/" + "reports", fileName), "Акт 1/$district" )
                 }
             }
-
         }
+
+
         for(i in 0 until Utils.reports.size){
             if(Utils.reports[i]!!.selected){
                 queue.add(Utils.reports[i]!!.name)
-                val storageRef = FirebaseStorage.getInstance().reference.child("buffer/СЕВЕР/${Utils.reports[i]!!.name}.json")
+                val storageRef = FirebaseStorage.getInstance().reference.child("buffer/$district/${Utils.reports[i]!!.name}.json")
 
                 storageRef.getBytes(1024*1024).addOnSuccessListener {
                     val model = gson.fromJson(it.toString(Charsets.UTF_8), ActBufferModel::class.java)
@@ -273,6 +281,8 @@ class ExcelUtils {
 
                     sum += model.price
                     bts.add(model.id)
+                    reps.add(model)
+
                     onActCreationFinished.onFinished(wb, queue)
 
                 }.addOnFailureListener {
@@ -281,13 +291,202 @@ class ExcelUtils {
 
             }
         }
-
-
-
     }
 
 
-    fun generateSecondReport(wb: WritableWorkbook){
+    fun generateAdditional(wb: WritableWorkbook, reps: ArrayList<ActBufferModel>, sum: Double){
+        val year = Calendar.getInstance().get(Calendar.YEAR)
+        val sheet = wb.createSheet("Дополнение", 0)
+
+        for (x in 0 until 30) {
+            val cell = sheet.getColumnView(x)
+            cell.size = 900
+            cell.isAutosize = false
+            sheet.setColumnView(x, cell)
+        }
+
+        val alignmentRight = WritableCellFormat()
+        alignmentRight.setFont(WritableFont(Font.ARIAL, 8))
+        alignmentRight.alignment = Alignment.RIGHT
+
+        val centerAlignment = WritableCellFormat()
+        centerAlignment.alignment = Alignment.CENTRE
+
+
+        val border = WritableCellFormat()
+        border.setBorder(Border.ALL, BorderLineStyle.MEDIUM)
+        border.setFont(WritableFont(Font.ARIAL, 8))
+        border.wrap = true
+
+        sheet.addCell(Label(29,1, "Приложение 2", alignmentRight))
+        sheet.addCell(Label(29,2, "к Акту № 00/Ю-$year-РЕВ", alignmentRight))
+        sheet.addCell(Label(29,3, "к Заказу № 1/8417-$year   от 06.05.$year г.", alignmentRight))
+        sheet.addCell(Label(29,4, "за июнь месяц 2019 года", alignmentRight))
+
+
+        sheet.addCell(Label(29,7, "Генеральный директор ", alignmentRight))
+        sheet.addCell(Label(29,8, "ООО «РОМАШКА»", alignmentRight))
+
+
+        sheet.addCell(Label(1,11, "___________________ ИВАНОВ О.А."))
+        sheet.addCell(Label(1,13, "«_____»____________ $year г."))
+
+        sheet.addCell(Label(29,11, "_______________  ПЕТРОВ И.Н.", alignmentRight))
+        sheet.addCell(Label(29,13, "«_____»____________ $year г.", alignmentRight))
+
+        sheet.addCell(Label(1,7, "Директор Департамента "))
+        sheet.addCell(Label(1,8, "эксплуатации сети "))
+        sheet.addCell(Label(1,9, "структурного подразделения "))
+        sheet.addCell(Label(1,10, "\"КОПЫТА\""))
+
+        sheet.addCell(Label(1,22, "Заказчик:"))
+        sheet.mergeCells(4, 22,17,22)
+        sheet.addCell(Label(5,22, "ПАО  «КОПЫТА»"))
+        sheet.addCell(Label(1,23, "Подрядчик:"))
+        sheet.mergeCells(4, 23,17,23)
+        sheet.addCell(Label(5,23, "ООО «РОМАШКА»"))
+        sheet.addCell(Label(1,24, "Договор:"))
+        sheet.mergeCells(4, 24,17,24)
+        sheet.addCell(Label(5,24, "№ D190108417  от 16.04.$year г."))
+
+        sheet.addCell(Label(1,26, "ДОПОЛНЕНИЕ", centerAlignment))
+        sheet.addCell(Label(1,27, "к Акту № 00/Ю-$year-РЕВ приемки-сдачи выполненных работ", centerAlignment))
+        sheet.addCell(Label(1,28, "По техническому обслуживанию и текущему ремонту", centerAlignment))
+        sheet.addCell(Label(1,29, "за июнь месяц $year года", centerAlignment))
+
+        sheet.mergeCells(1, 26,29,26)
+        sheet.mergeCells(1, 27,29,27)
+        sheet.mergeCells(1, 28,29,28)
+        sheet.mergeCells(1, 29,29,29)
+
+        sheet.addCell(Label(1,31, "", border))
+        sheet.addCell(Label(2,31, "№ БС,  Адрес объектов ПАО МТС, проверенных выборочным контролем", border))
+        sheet.addCell(Label(13,31, "№ и дата чек-листа", border))
+        sheet.addCell(Label(16,31, "Суммарная оценка по результатам проверки объекта", border))
+        sheet.addCell(Label(21,31, "Решение о приемке согласно Прил.5 к Договору", border))
+        sheet.addCell(Label(2,32, "ХХХХХХХХХХ район", border))
+
+        sheet.mergeCells(2,31, 12,31)
+        sheet.mergeCells(13,31, 15,31)
+        sheet.mergeCells(16,31, 20,31)
+        sheet.mergeCells(21,31, 23,31)
+        sheet.mergeCells(1, 32, 23, 32)
+        var startRow = 33
+        for(i in 0 until reps.size) {
+            val model = reps[i]
+            sheet.addCell(Label(1, startRow, (i+1).toString(), border))
+            sheet.addCell(Label(2, startRow, "БС-${model.id}", border))
+            sheet.addCell(Label(4, startRow, model.address + "," + model.region, border))
+
+            sheet.addCell(Label(13, startRow, "", border))
+            sheet.addCell(Label(14, startRow, "", border))
+            sheet.addCell(Label(15, startRow, "", border))
+
+            sheet.addCell(Label(16, startRow, "1.0", border))
+            sheet.addCell(Label(17, startRow, "", border))
+            sheet.addCell(Label(18, startRow, "", border))
+            sheet.addCell(Label(19, startRow, "", border))
+            sheet.addCell(Label(20, startRow, "", border))
+
+            sheet.addCell(Label(21, startRow, "1.0", border))
+            sheet.addCell(Label(22, startRow, "", border))
+            sheet.addCell(Label(23, startRow, "", border))
+
+
+            sheet.addCell(Label(1, startRow + 1, "", border))
+            sheet.addCell(Label(2, startRow + 1, model.job, border))
+
+            sheet.mergeCells(2, startRow, 3, startRow)
+            sheet.mergeCells(4, startRow, 12, startRow)
+            sheet.mergeCells(2, startRow + 1, 12, startRow + 1)
+            for(j in 13 until 24) {
+                sheet.addCell(Label(j, startRow + 1, "", border))
+            }
+
+            startRow += 2
+        }
+
+        val borderRight = WritableCellFormat()
+        borderRight.setBorder(Border.ALL, BorderLineStyle.MEDIUM)
+        borderRight.setFont(WritableFont(Font.ARIAL, 8))
+        borderRight.wrap = true
+        borderRight.alignment = Alignment.RIGHT
+        sheet.addCell(Label(1, startRow, "Усредненная оценка:", borderRight))
+        sheet.mergeCells(1, startRow, 15, startRow)
+
+        sheet.addCell(Label(16, startRow, "1.00", border))
+        sheet.addCell(Label(21, startRow, "", border))
+        sheet.mergeCells(16, startRow, 20, startRow)
+        sheet.mergeCells(21, startRow, 23, startRow)
+
+
+        sheet.addCell(Label(1, startRow + 2, "По Акту № 00/Ю-$year-РЕВ приемки-сдачи выполнених работ за июнь месяц 2019 года стоимость выполненных рвбот составляет:"))
+        sheet.mergeCells(1, startRow + 2, 28, startRow + 2)
+
+        sheet.addCell(Label(1, startRow + 4, "Сумма:", alignmentRight))
+        sheet.addCell(Label(1, startRow + 6, "плюс НДС 20% в сумме:", alignmentRight))
+        sheet.addCell(Label(1, startRow + 8, "итого с учетом НДС 20% в сумме:", alignmentRight))
+        sheet.mergeCells(1, startRow + 4, 9, startRow + 4)
+        sheet.mergeCells(1, startRow + 6, 9, startRow + 6)
+        sheet.mergeCells(1, startRow + 8, 9, startRow + 8)
+
+        sheet.addCell(Label(10, startRow + 4, sum.toString()))
+        sheet.addCell(Label(10, startRow + 6, (sum*0.2).toString()))
+        sheet.addCell(Label(10, startRow + 8, (sum*1.2).toString()))
+
+        sheet.mergeCells(10, startRow + 4, 14, startRow + 4)
+        sheet.mergeCells(10, startRow + 6, 14, startRow + 6)
+        sheet.mergeCells(10, startRow + 8, 14, startRow + 8)
+
+        sheet.addCell(Label(1, startRow + 10, "1. Качество работ проверено полномочным представителем Заказчика в присутствии представителей Подрядчика в соответствии с критериями оценки выполненных работ по обслуживанию АО."))
+        sheet.mergeCells(1, startRow + 10, 26, startRow + 10)
+
+
+        sheet.addCell(Label(1, startRow + 12, "2. В соответствии с требованиями п 4.1 Договора Заказчиком заполнены прилагаемые Чек-листы №"))
+        sheet.mergeCells(1, startRow + 12, 26, startRow + 12)
+
+        sheet.addCell(Label(1, startRow + 14, "Согласно п 4.1 Договра стоимость не принятых у Подрядчика работ за июнь месяц $year года составляет: "))
+        sheet.mergeCells(1, startRow + 14, 26, startRow + 14)
+
+        sheet.addCell(Label(1,startRow + 16, "\"Сумма – ____________ (_____________________________________________) рублей,\n" +
+                "плюс НДС 20% в сумме – ____________ (_______________________________) рублей,\n" +
+                "Итого с учетом НДС 20% сумма – ____________ (________________________) рублей.\""))
+
+        sheet.mergeCells(1, startRow + 16, 26, startRow + 16)
+
+
+        sheet.addCell(Label(8, startRow + 18, "Сумма:", alignmentRight))
+        sheet.addCell(Label(8, startRow + 20, "плюс НДС 20% в сумме:", alignmentRight))
+        sheet.addCell(Label(8, startRow + 22, "итого с учетом НДС 20% в сумме:", alignmentRight))
+        sheet.mergeCells(8, startRow + 16, 16, startRow + 16)
+        sheet.mergeCells(8, startRow + 20, 16, startRow + 20)
+        sheet.mergeCells(8, startRow + 22, 16, startRow + 22)
+
+        sheet.addCell(Label(17, startRow + 16, sum.toString()))
+        sheet.addCell(Label(17, startRow + 20, (sum*0.2).toString()))
+        sheet.addCell(Label(17, startRow + 22, (sum*1.2).toString()))
+
+        sheet.mergeCells(17, startRow + 16, 21, startRow + 16)
+        sheet.mergeCells(17, startRow + 20, 21, startRow + 20)
+        sheet.mergeCells(17, startRow + 22, 21, startRow + 22)
+
+        startRow += 28
+
+        sheet.addCell(Label(1, startRow, "РАБОТУ СДАЛ:"))
+        sheet.addCell(Label(1, startRow + 1, "от Подрядчика:"))
+        sheet.addCell(Label(1, startRow + 2, "Технический директор"))
+        sheet.addCell(Label(1, startRow + 4, "_____________________ Логинов В.А"))
+        sheet.addCell(Label(1, startRow + 8, "«_____»____________ $year г."))
+
+        sheet.addCell(Label(29, startRow, "РАБОТУ ПРИНЯЛ:", alignmentRight))
+        sheet.addCell(Label(29, startRow + 1, "от Заказчика:", alignmentRight))
+        sheet.addCell(Label(29, startRow + 2, "Начальник отдела ЭРП", alignmentRight))
+        sheet.addCell(Label(29, startRow + 4, "_____________________ Кузин Н.К", alignmentRight))
+        sheet.addCell(Label(29, startRow + 8, "«_____»____________ $year г.", alignmentRight))
+
+    }
+
+    fun generateSecondReport(wb: WritableWorkbook, fileName: String, district: String){
         val sheet = wb.createSheet("Матрица ДопРабот", 0)
 
         sheet.addCell(Label(0, 0, "№ БС"))
@@ -327,13 +526,16 @@ class ExcelUtils {
             }
         }
 
+        DatabaseUtils.uploadFileToStorage(File(getExternalStorageDirectory().absolutePath + "/" + "reports", fileName), "Акт 2/$district" )
+
+
         wb.write()
         wb.close()
     }
 
 
 
-    fun createWorkbook(fileName: String): WritableWorkbook? {
+    fun createWorkbook(fileName: String): WritableWorkbook?  {
         //exports must use a temp file while writing to avoid memory hogging
         val wbSettings = WorkbookSettings()
         wbSettings.useTemporaryFileDuringWrite = true

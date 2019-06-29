@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import com.vkram2711.usadba.models.ActBufferModel
 import com.vkram2711.usadba.models.BufferReportModel
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.lang.Exception
 import java.nio.charset.Charset
 
@@ -117,8 +118,6 @@ class DatabaseUtils {
         }
 
         fun getFiles(category: String, onDataReceivedCallback: OnDataReceivedCallback){
-            val storage = FirebaseStorage.getInstance()
-            val storageRef = storage.reference.child("buffer/")
             val database = FirebaseDatabase.getInstance()
             val reg = database.getReference("buffer/$category")
             reg.addValueEventListener(object : ValueEventListener {
@@ -134,6 +133,47 @@ class DatabaseUtils {
                     onDataReceivedCallback.onReceived(null)
                 }
             })
+        }
+
+        fun uploadFileToStorage(files: File, filePos: String){
+            val file = Uri.fromFile(files)
+            val storage = FirebaseStorage.getInstance().reference
+
+            val riversRef = storage.child("$filePos/${file.lastPathSegment}")
+            val uploadTask = riversRef.putFile(file)
+
+            uploadTask.addOnFailureListener {
+                it.printStackTrace()
+            }.addOnSuccessListener {
+                Log.d(TAG, "file uploaded")
+            }
+
+        }
+
+
+        fun deleteFilesFromBuffer(district: String){
+            for(i in 0 until Utils.reports.size){
+                if(Utils.reports[i]!!.selected){
+                    val storageRef = FirebaseStorage.getInstance().reference
+
+                    val act = Utils.reports[i]
+                    val desertRef = storageRef.child("buffer/$district/$act.json")
+
+                    desertRef.delete().addOnSuccessListener {
+
+                    }.addOnFailureListener {
+                        it.printStackTrace()
+                    }
+
+                    val database = FirebaseDatabase.getInstance()
+                    val reg = database.getReference("buffer/$district").child("${i+1}").removeValue()
+                    reg.addOnFailureListener {
+                        it.printStackTrace()
+                    }.addOnSuccessListener {
+                        Log.d(TAG, "removed from database")
+                    }
+                }
+            }
         }
     }
 }

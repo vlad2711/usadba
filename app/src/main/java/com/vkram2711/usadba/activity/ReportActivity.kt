@@ -27,7 +27,7 @@ class ReportActivity : AppCompatActivity() {
         tabLayout.setupWithViewPager(viewPager)
 
         save.setOnClickListener {
-            ExcelUtils().generateSecondReport(ExcelUtils().createWorkbook("jobs.xls")!!)
+            ExcelUtils().generateSecondReport(ExcelUtils().createWorkbook("jobs.xls")!!, "jobs.xls", intent.getStringExtra("district"))
             finish()
         }
     }

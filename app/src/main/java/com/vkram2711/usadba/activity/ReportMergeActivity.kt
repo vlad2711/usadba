@@ -16,12 +16,16 @@ import kotlinx.android.synthetic.main.activity_report_merge.*
 
 class ReportMergeActivity : AppCompatActivity(), OnDataReceivedCallback {
 
+    lateinit var district: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_merge)
 
-        DatabaseUtils.getFiles("СЕВЕР", this)
+        district = intent.getStringExtra("district")!!
+
+
+        DatabaseUtils.getFiles(district, this)
 
     }
 
@@ -30,7 +34,8 @@ class ReportMergeActivity : AppCompatActivity(), OnDataReceivedCallback {
         buffer_report_list.layoutManager = LinearLayoutManager(this)
 
         create_report.setOnClickListener {
-            ExcelUtils().generateFirstReport(ExcelUtils().createWorkbook("first.xls")!!)
+            val wb = ExcelUtils().createWorkbook("first.xls")!!
+            ExcelUtils().generateFirstReport(wb, district,"first.xls" )
             finish()
         }
     }
