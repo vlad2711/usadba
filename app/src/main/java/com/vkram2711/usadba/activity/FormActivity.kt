@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.vkram2711.usadba.R
 import com.vkram2711.usadba.models.Job
@@ -41,12 +42,14 @@ class FormActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         job.onItemSelectedListener = this
 
         add.setOnClickListener {
-            if(jobPosition >= 0){
+            if(jobPosition >= 0 && count.text.isNotEmpty()){
                 val j = Utils.jobs[category][jobPosition]
                 val job = Job(j.number, j.price, j.jobTitle, count.text.toString(), j.unit, j.category)
                 Utils.additionalJobs[category].add(job)
                 EventBus.getDefault().post("event")
                 finish()
+            } else{
+                Toast.makeText(this, "Выберите вид работ и укаите их количество", Toast.LENGTH_LONG).show()
             }
         }
     }

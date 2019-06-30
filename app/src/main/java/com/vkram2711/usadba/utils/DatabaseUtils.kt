@@ -64,11 +64,9 @@ class DatabaseUtils {
                     p0.toException().printStackTrace()
                 }
 
-
                 override fun onDataChange(p0: DataSnapshot) {
                     val data = p0.child(type)
 
-                    System.out.println(data)
                     for (i in 0 until data.childrenCount) {
                         val item = data.child(i.toString()).value as Map<String, String>
                         Log.d(TAG, item.toString())
@@ -125,10 +123,15 @@ class DatabaseUtils {
                     p0.toException().printStackTrace()
                 }
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val reports =  snapshot.value as ArrayList<String>
-                    Utils.reports = Array(reports.size){null}
-                    for(i in 0 until reports.size){
-                        Utils.reports[i] = BufferReportModel(reports[i])
+                    if(snapshot.value != null) {
+                        val reports = snapshot.value as ArrayList<String>
+                        Utils.reports = Array(reports.size) { null }
+                        for (i in 0 until reports.size) {
+                            Utils.reports[i] = BufferReportModel(reports[i])
+                        }
+                    } else{
+                        Utils.reports = Array(0) {null
+                        }
                     }
                     onDataReceivedCallback.onReceived(null)
                 }
@@ -157,7 +160,7 @@ class DatabaseUtils {
                     val storageRef = FirebaseStorage.getInstance().reference
 
                     val act = Utils.reports[i]
-                    val desertRef = storageRef.child("buffer/$district/$act.json")
+                    val desertRef = storageRef.child("buffer/$district/$act")
 
                     desertRef.delete().addOnSuccessListener {
 
@@ -166,7 +169,7 @@ class DatabaseUtils {
                     }
 
                     val database = FirebaseDatabase.getInstance()
-                    val reg = database.getReference("buffer/$district").child("${i+1}").removeValue()
+                    val reg = database.getReference("buffer/$district").child("$i").removeValue()
                     reg.addOnFailureListener {
                         it.printStackTrace()
                     }.addOnSuccessListener {
