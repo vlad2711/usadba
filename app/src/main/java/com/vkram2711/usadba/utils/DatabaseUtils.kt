@@ -231,9 +231,9 @@ class DatabaseUtils {
 
             }.addOnFailureListener {
                 it.printStackTrace()
-                onTabelDownloaded.onDownloaded(ExcelUtils().createWorkbook(Utils.user.name)!!)
+                onTabelDownloaded.onDownloaded(ExcelUtils().createWorkbook(Utils.user.name + ".xls")!!)
             }.addOnCanceledListener {
-                onTabelDownloaded.onDownloaded(ExcelUtils().createWorkbook(Utils.user.name)!!)
+                onTabelDownloaded.onDownloaded(ExcelUtils().createWorkbook(Utils.user.name + ".xls")!!)
             }
         }
 

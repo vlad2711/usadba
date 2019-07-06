@@ -505,7 +505,7 @@ class ExcelUtils {
         for (i in 0 until Utils.additionalJobs.size) {
             for(j in 0 until Utils.additionalJobs[i].size) {
 
-                sheet.addCell(Label(0, i + 1, Utils.bts["№ БТС"].toString()))
+                sheet.addCell(Label(0, j + 1, Utils.bts["№ БТС"].toString()))
                 sheet.addCell(Label(
                         1,
                         i + 1,
@@ -515,15 +515,15 @@ class ExcelUtils {
                     )
                 )
 
-                sheet.addCell(Label(2, i + 1, Utils.removeSpecialSymbols(Utils.bts["Тип АО"].toString())))
-                sheet.addCell(Label(3, i + 1, Utils.additionalJobs[i][j].jobTitle))
-                sheet.addCell(Label(4, i + 1, Utils.additionalJobs[i][j].unit))
-                sheet.addCell(Label(5, i + 1, Utils.additionalJobs[i][j].count!!.toString()))
-                sheet.addCell(Label(6, i + 1, Utils.additionalJobs[i][j].price))
+                sheet.addCell(Label(2, j + 1, Utils.removeSpecialSymbols(Utils.bts["Тип АО"].toString())))
+                sheet.addCell(Label(3, j + 1, Utils.additionalJobs[i][j].jobTitle))
+                sheet.addCell(Label(4, j + 1, Utils.additionalJobs[i][j].unit))
+                sheet.addCell(Label(5, j + 1, Utils.additionalJobs[i][j].count!!.toString()))
+                sheet.addCell(Label(6, j + 1, Utils.additionalJobs[i][j].price))
                 sheet.addCell(
                     Label(
                         7,
-                        i + 1,
+                        j + 1,
                         (Utils.additionalJobs[i][j].price.replace(',', '.').replace(" ", "").toDouble() * Utils.additionalJobs[i][j].count!!).toString()
                     )
                 )
@@ -584,7 +584,7 @@ class ExcelUtils {
         val fioBrig = Utils.user.name
         val fioMon = Utils.partner!!.name
 
-        val startRow = 5
+        var startRow = 5
         for(i in 0 until Utils.additionalJobs.size){
             for(j in 0 until Utils.additionalJobs[i].size){
                 sheet.addCell(Label(0, startRow, date, border))
@@ -599,6 +599,7 @@ class ExcelUtils {
                 sheet.mergeCells(6, startRow, 10, startRow)
                 sheet.mergeCells(11, startRow, 15, startRow)
                 sheet.mergeCells(16, startRow, 26, startRow)
+                startRow++
             }
         }
 
