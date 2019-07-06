@@ -15,11 +15,18 @@ import jxl.format.Border
 import jxl.format.BorderLineStyle
 import jxl.format.CellFormat
 import jxl.write.*
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+
+/*
+ * Если кто-то читает это... Тут боль, только боль
+ */
 
 class ExcelUtils {
     private val TAG = this::class.java.name
@@ -238,7 +245,7 @@ class ExcelUtils {
                     sheet.addCell(Label(29, startRow + 4, "_____________________ Кузин Н.К", alignmentRight))
                     sheet.addCell(Label(29, startRow + 8, "«_____»____________ $year г.", alignmentRight))
 
-                    generateAdditional(wb, reps, sum)
+                    generateAdditional(wb, reps, sum, startRow)
 
                     DatabaseUtils.deleteFilesFromBuffer(district)
                     wb.write()
@@ -294,9 +301,9 @@ class ExcelUtils {
     }
 
 
-    fun generateAdditional(wb: WritableWorkbook, reps: ArrayList<ActBufferModel>, sum: Double){
+    fun generateAdditional(wb: WritableWorkbook, reps: ArrayList<ActBufferModel>, sum: Double, endRow: Int){
         val year = Calendar.getInstance().get(Calendar.YEAR)
-        val sheet = wb.createSheet("Дополнение", 0)
+        val sheet = wb.getSheet(0)
 
         for (x in 0 until 30) {
             val cell = sheet.getColumnView(x)
@@ -318,89 +325,89 @@ class ExcelUtils {
         border.setFont(WritableFont(Font.ARIAL, 8))
         border.wrap = true
 
-        sheet.addCell(Label(29,1, "Приложение 2", alignmentRight))
-        sheet.addCell(Label(29,2, "к Акту № 00/Ю-$year-РЕВ", alignmentRight))
-        sheet.addCell(Label(29,3, "к Заказу № 1/8417-$year   от 06.05.$year г.", alignmentRight))
-        sheet.addCell(Label(29,4, "за июнь месяц 2019 года", alignmentRight))
+        sheet.addCell(Label(29,1 + endRow, "Приложение 2", alignmentRight))
+        sheet.addCell(Label(29,2 + endRow, "к Акту № 00/Ю-$year-РЕВ", alignmentRight))
+        sheet.addCell(Label(29,3 + endRow, "к Заказу № 1/8417-$year   от 06.05.$year г.", alignmentRight))
+        sheet.addCell(Label(29,4 + endRow, "за июнь месяц 2019 года", alignmentRight))
 
 
-        sheet.addCell(Label(29,7, "Генеральный директор ", alignmentRight))
-        sheet.addCell(Label(29,8, "ООО «РОМАШКА»", alignmentRight))
+        sheet.addCell(Label(29,7 + endRow, "Генеральный директор ", alignmentRight))
+        sheet.addCell(Label(29,8 + endRow, "ООО «РОМАШКА»", alignmentRight))
 
 
-        sheet.addCell(Label(1,11, "___________________ ИВАНОВ О.А."))
-        sheet.addCell(Label(1,13, "«_____»____________ $year г."))
+        sheet.addCell(Label(1,11 + endRow, "___________________ ИВАНОВ О.А."))
+        sheet.addCell(Label(1,13 + endRow, "«_____»____________ $year г."))
 
-        sheet.addCell(Label(29,11, "_______________  ПЕТРОВ И.Н.", alignmentRight))
-        sheet.addCell(Label(29,13, "«_____»____________ $year г.", alignmentRight))
+        sheet.addCell(Label(29,11 + endRow, "_______________  ПЕТРОВ И.Н.", alignmentRight))
+        sheet.addCell(Label(29,13 + endRow, "«_____»____________ $year г.", alignmentRight))
 
-        sheet.addCell(Label(1,7, "Директор Департамента "))
-        sheet.addCell(Label(1,8, "эксплуатации сети "))
-        sheet.addCell(Label(1,9, "структурного подразделения "))
-        sheet.addCell(Label(1,10, "\"КОПЫТА\""))
+        sheet.addCell(Label(1,7 + endRow, "Директор Департамента "))
+        sheet.addCell(Label(1,8 + endRow, "эксплуатации сети "))
+        sheet.addCell(Label(1,9 + endRow, "структурного подразделения "))
+        sheet.addCell(Label(1,10 + endRow, "\"КОПЫТА\""))
 
-        sheet.addCell(Label(1,22, "Заказчик:"))
-        sheet.mergeCells(4, 22,17,22)
-        sheet.addCell(Label(5,22, "ПАО  «КОПЫТА»"))
-        sheet.addCell(Label(1,23, "Подрядчик:"))
-        sheet.mergeCells(4, 23,17,23)
-        sheet.addCell(Label(5,23, "ООО «РОМАШКА»"))
-        sheet.addCell(Label(1,24, "Договор:"))
-        sheet.mergeCells(4, 24,17,24)
-        sheet.addCell(Label(5,24, "№ D190108417  от 16.04.$year г."))
+        sheet.addCell(Label(1,22 + endRow, "Заказчик:"))
+        sheet.mergeCells(4, 22 + endRow,17,22 + endRow)
+        sheet.addCell(Label(5,22 + endRow, "ПАО  «КОПЫТА»"))
+        sheet.addCell(Label(1,23 + endRow, "Подрядчик:"))
+        sheet.mergeCells(4, 23 + endRow,17,23 + endRow)
+        sheet.addCell(Label(5,23 + endRow, "ООО «РОМАШКА»"))
+        sheet.addCell(Label(1,24 + endRow, "Договор:"))
+        sheet.mergeCells(4, 24 + endRow,17,24 + endRow)
+        sheet.addCell(Label(5,24 + endRow, "№ D190108417  от 16.04.$year г."))
 
-        sheet.addCell(Label(1,26, "ДОПОЛНЕНИЕ", centerAlignment))
-        sheet.addCell(Label(1,27, "к Акту № 00/Ю-$year-РЕВ приемки-сдачи выполненных работ", centerAlignment))
-        sheet.addCell(Label(1,28, "По техническому обслуживанию и текущему ремонту", centerAlignment))
-        sheet.addCell(Label(1,29, "за июнь месяц $year года", centerAlignment))
+        sheet.addCell(Label(1,26 + endRow, "ДОПОЛНЕНИЕ", centerAlignment))
+        sheet.addCell(Label(1,27 + endRow, "к Акту № 00/Ю-$year-РЕВ приемки-сдачи выполненных работ", centerAlignment))
+        sheet.addCell(Label(1,28 + endRow, "По техническому обслуживанию и текущему ремонту", centerAlignment))
+        sheet.addCell(Label(1,29 + endRow, "за июнь месяц $year года", centerAlignment))
 
-        sheet.mergeCells(1, 26,29,26)
-        sheet.mergeCells(1, 27,29,27)
-        sheet.mergeCells(1, 28,29,28)
-        sheet.mergeCells(1, 29,29,29)
+        sheet.mergeCells(1, 26 + endRow,29,26 + endRow)
+        sheet.mergeCells(1, 27 + endRow,29,27 + endRow)
+        sheet.mergeCells(1, 28 + endRow,29,28 + endRow)
+        sheet.mergeCells(1, 29 + endRow,29,29 + endRow)
 
-        sheet.addCell(Label(1,31, "", border))
-        sheet.addCell(Label(2,31, "№ БС,  Адрес объектов ПАО МТС, проверенных выборочным контролем", border))
-        sheet.addCell(Label(13,31, "№ и дата чек-листа", border))
-        sheet.addCell(Label(16,31, "Суммарная оценка по результатам проверки объекта", border))
-        sheet.addCell(Label(21,31, "Решение о приемке согласно Прил.5 к Договору", border))
-        sheet.addCell(Label(2,32, "ХХХХХХХХХХ район", border))
+        sheet.addCell(Label(1,31 + endRow, "", border))
+        sheet.addCell(Label(2,31 + endRow, "№ БС,  Адрес объектов ПАО МТС, проверенных выборочным контролем", border))
+        sheet.addCell(Label(13,31 + endRow, "№ и дата чек-листа", border))
+        sheet.addCell(Label(16,31 + endRow, "Суммарная оценка по результатам проверки объекта", border))
+        sheet.addCell(Label(21,31 + endRow, "Решение о приемке согласно Прил.5 к Договору", border))
+        sheet.addCell(Label(2,32 + endRow, "ХХХХХХХХХХ район", border))
 
-        sheet.mergeCells(2,31, 12,31)
-        sheet.mergeCells(13,31, 15,31)
-        sheet.mergeCells(16,31, 20,31)
-        sheet.mergeCells(21,31, 23,31)
-        sheet.mergeCells(1, 32, 23, 32)
+        sheet.mergeCells(2,31 + endRow, 12,31 + endRow)
+        sheet.mergeCells(13,31 + endRow, 15,31 + endRow)
+        sheet.mergeCells(16,31 + endRow, 20,31 + endRow)
+        sheet.mergeCells(21,31 + endRow, 23,31 + endRow)
+        sheet.mergeCells(1, 32 + endRow, 23, 32 + endRow)
         var startRow = 33
         for(i in 0 until reps.size) {
             val model = reps[i]
-            sheet.addCell(Label(1, startRow, (i+1).toString(), border))
-            sheet.addCell(Label(2, startRow, "БС-${model.id}", border))
-            sheet.addCell(Label(4, startRow, model.address + "," + model.region, border))
+            sheet.addCell(Label(1, startRow + endRow, (i+1).toString(), border))
+            sheet.addCell(Label(2, startRow + endRow, "БС-${model.id}", border))
+            sheet.addCell(Label(4, startRow + endRow, model.address + "," + model.region, border))
 
-            sheet.addCell(Label(13, startRow, "", border))
-            sheet.addCell(Label(14, startRow, "", border))
-            sheet.addCell(Label(15, startRow, "", border))
+            sheet.addCell(Label(13, startRow + endRow, "", border))
+            sheet.addCell(Label(14, startRow + endRow, "", border))
+            sheet.addCell(Label(15, startRow + endRow, "", border))
 
-            sheet.addCell(Label(16, startRow, "1.0", border))
-            sheet.addCell(Label(17, startRow, "", border))
-            sheet.addCell(Label(18, startRow, "", border))
-            sheet.addCell(Label(19, startRow, "", border))
-            sheet.addCell(Label(20, startRow, "", border))
+            sheet.addCell(Label(16, startRow + endRow, "1.0", border))
+            sheet.addCell(Label(17, startRow + endRow, "", border))
+            sheet.addCell(Label(18, startRow + endRow, "", border))
+            sheet.addCell(Label(19, startRow + endRow, "", border))
+            sheet.addCell(Label(20, startRow + endRow, "", border))
 
-            sheet.addCell(Label(21, startRow, "1.0", border))
-            sheet.addCell(Label(22, startRow, "", border))
-            sheet.addCell(Label(23, startRow, "", border))
+            sheet.addCell(Label(21, startRow + endRow, "1.0", border))
+            sheet.addCell(Label(22, startRow + endRow, "", border))
+            sheet.addCell(Label(23, startRow + endRow, "", border))
 
 
-            sheet.addCell(Label(1, startRow + 1, "", border))
-            sheet.addCell(Label(2, startRow + 1, model.job, border))
+            sheet.addCell(Label(1, startRow + endRow + 1, "", border))
+            sheet.addCell(Label(2, startRow + endRow + 1, model.job, border))
 
-            sheet.mergeCells(2, startRow, 3, startRow)
-            sheet.mergeCells(4, startRow, 12, startRow)
-            sheet.mergeCells(2, startRow + 1, 12, startRow + 1)
+            sheet.mergeCells(2, startRow + endRow, 3, startRow + endRow)
+            sheet.mergeCells(4, startRow + endRow, 12, startRow + endRow)
+            sheet.mergeCells(2, startRow + endRow + 1, 12, startRow  + endRow+ 1)
             for(j in 13 until 24) {
-                sheet.addCell(Label(j, startRow + 1, "", border))
+                sheet.addCell(Label(j, startRow  + endRow+ 1, "", border))
             }
 
             startRow += 2
@@ -411,78 +418,75 @@ class ExcelUtils {
         borderRight.setFont(WritableFont(Font.ARIAL, 8))
         borderRight.wrap = true
         borderRight.alignment = Alignment.RIGHT
-        sheet.addCell(Label(1, startRow, "Усредненная оценка:", borderRight))
-        sheet.mergeCells(1, startRow, 15, startRow)
+        sheet.addCell(Label(1, startRow + endRow, "Усредненная оценка:", borderRight))
+        sheet.mergeCells(1, startRow + endRow, 15, startRow)
 
-        sheet.addCell(Label(16, startRow, "1.00", border))
-        sheet.addCell(Label(21, startRow, "", border))
-        sheet.mergeCells(16, startRow, 20, startRow)
-        sheet.mergeCells(21, startRow, 23, startRow)
-
-
-        sheet.addCell(Label(1, startRow + 2, "По Акту № 00/Ю-$year-РЕВ приемки-сдачи выполнених работ за июнь месяц 2019 года стоимость выполненных рвбот составляет:"))
-        sheet.mergeCells(1, startRow + 2, 28, startRow + 2)
-
-        sheet.addCell(Label(1, startRow + 4, "Сумма:", alignmentRight))
-        sheet.addCell(Label(1, startRow + 6, "плюс НДС 20% в сумме:", alignmentRight))
-        sheet.addCell(Label(1, startRow + 8, "итого с учетом НДС 20% в сумме:", alignmentRight))
-        sheet.mergeCells(1, startRow + 4, 9, startRow + 4)
-        sheet.mergeCells(1, startRow + 6, 9, startRow + 6)
-        sheet.mergeCells(1, startRow + 8, 9, startRow + 8)
-
-        sheet.addCell(Label(10, startRow + 4, sum.toString()))
-        sheet.addCell(Label(10, startRow + 6, (sum*0.2).toString()))
-        sheet.addCell(Label(10, startRow + 8, (sum*1.2).toString()))
-
-        sheet.mergeCells(10, startRow + 4, 14, startRow + 4)
-        sheet.mergeCells(10, startRow + 6, 14, startRow + 6)
-        sheet.mergeCells(10, startRow + 8, 14, startRow + 8)
-
-        sheet.addCell(Label(1, startRow + 10, "1. Качество работ проверено полномочным представителем Заказчика в присутствии представителей Подрядчика в соответствии с критериями оценки выполненных работ по обслуживанию АО."))
-        sheet.mergeCells(1, startRow + 10, 26, startRow + 10)
+        sheet.addCell(Label(16, startRow + endRow, "1.00", border))
+        sheet.addCell(Label(21, startRow + endRow, "", border))
+        sheet.mergeCells(16, startRow + endRow, 20, startRow + endRow)
+        sheet.mergeCells(21, startRow + endRow, 23, startRow + endRow)
 
 
-        sheet.addCell(Label(1, startRow + 12, "2. В соответствии с требованиями п 4.1 Договора Заказчиком заполнены прилагаемые Чек-листы №"))
-        sheet.mergeCells(1, startRow + 12, 26, startRow + 12)
+        sheet.addCell(Label(1, startRow + endRow + 2, "По Акту № 00/Ю-$year-РЕВ приемки-сдачи выполнених работ за июнь месяц 2019 года стоимость выполненных рвбот составляет:"))
+        sheet.mergeCells(1, startRow + endRow + 2, 28, startRow + endRow + 2)
 
-        sheet.addCell(Label(1, startRow + 14, "Согласно п 4.1 Договра стоимость не принятых у Подрядчика работ за июнь месяц $year года составляет: "))
-        sheet.mergeCells(1, startRow + 14, 26, startRow + 14)
+        sheet.addCell(Label(1, startRow + endRow + 4, "Сумма:", alignmentRight))
+        sheet.addCell(Label(1, startRow + endRow + 6, "плюс НДС 20% в сумме:", alignmentRight))
+        sheet.addCell(Label(1, startRow + endRow + 8, "итого с учетом НДС 20% в сумме:", alignmentRight))
+        sheet.mergeCells(1, startRow + endRow + 4, 9, startRow + endRow + 4)
+        sheet.mergeCells(1, startRow + endRow + 6, 9, startRow + endRow + 6)
+        sheet.mergeCells(1, startRow + endRow + 8, 9, startRow + endRow + 8)
 
-        sheet.addCell(Label(1,startRow + 16, "\"Сумма – ____________ (_____________________________________________) рублей,\n" +
+        sheet.addCell(Label(10, startRow + endRow + 4, sum.toString()))
+        sheet.addCell(Label(10, startRow + endRow + 6, (sum*0.2).toString()))
+        sheet.addCell(Label(10, startRow + endRow + 8, (sum*1.2).toString()))
+
+
+        sheet.addCell(Label(1, startRow + endRow + 10, "1. Качество работ проверено полномочным представителем Заказчика в присутствии представителей Подрядчика в соответствии с критериями оценки выполненных работ по обслуживанию АО."))
+        sheet.mergeCells(1, startRow + endRow + 10, 26, startRow + endRow + 10)
+
+
+        sheet.addCell(Label(1, startRow + endRow + 12, "2. В соответствии с требованиями п 4.1 Договора Заказчиком заполнены прилагаемые Чек-листы №"))
+        sheet.mergeCells(1, startRow + endRow + 12, 26, startRow + endRow + 12)
+
+        sheet.addCell(Label(1, startRow + endRow + 14, "Согласно п 4.1 Договра стоимость не принятых у Подрядчика работ за июнь месяц $year года составляет: "))
+        sheet.mergeCells(1, startRow + endRow + 14, 26, startRow + endRow + 14)
+
+        sheet.addCell(Label(1,startRow + endRow + 16, "\"Сумма – ____________ (_____________________________________________) рублей,\n" +
                 "плюс НДС 20% в сумме – ____________ (_______________________________) рублей,\n" +
                 "Итого с учетом НДС 20% сумма – ____________ (________________________) рублей.\""))
 
-        sheet.mergeCells(1, startRow + 16, 26, startRow + 16)
+        sheet.mergeCells(1, startRow + endRow + 16, 26, startRow + 16)
 
 
-        sheet.addCell(Label(8, startRow + 18, "Сумма:", alignmentRight))
-        sheet.addCell(Label(8, startRow + 20, "плюс НДС 20% в сумме:", alignmentRight))
-        sheet.addCell(Label(8, startRow + 22, "итого с учетом НДС 20% в сумме:", alignmentRight))
-        sheet.mergeCells(8, startRow + 16, 16, startRow + 16)
-        sheet.mergeCells(8, startRow + 20, 16, startRow + 20)
-        sheet.mergeCells(8, startRow + 22, 16, startRow + 22)
+        sheet.addCell(Label(8, startRow + endRow + 18, "Сумма:", alignmentRight))
+        sheet.addCell(Label(8, startRow + endRow + 20, "плюс НДС 20% в сумме:", alignmentRight))
+        sheet.addCell(Label(8, startRow + endRow + 22, "итого с учетом НДС 20% в сумме:", alignmentRight))
+        sheet.mergeCells(8, startRow + endRow + 16, 16, startRow + endRow + 16)
+        sheet.mergeCells(8, startRow + endRow + 20, 16, startRow + endRow + 20)
+        sheet.mergeCells(8, startRow + endRow + 22, 16, startRow + endRow + 22)
 
-        sheet.addCell(Label(17, startRow + 16, sum.toString()))
-        sheet.addCell(Label(17, startRow + 20, (sum*0.2).toString()))
-        sheet.addCell(Label(17, startRow + 22, (sum*1.2).toString()))
+        sheet.addCell(Label(17, startRow + endRow + 16, sum.toString()))
+        sheet.addCell(Label(17, startRow + endRow + 20, (sum*0.2).toString()))
+        sheet.addCell(Label(17, startRow + endRow + 22, (sum*1.2).toString()))
 
-        sheet.mergeCells(17, startRow + 16, 21, startRow + 16)
-        sheet.mergeCells(17, startRow + 20, 21, startRow + 20)
-        sheet.mergeCells(17, startRow + 22, 21, startRow + 22)
+        sheet.mergeCells(17, startRow + endRow + 16, 21, startRow + endRow + 16)
+        sheet.mergeCells(17, startRow + endRow + 20, 21, startRow + endRow + 20)
+        sheet.mergeCells(17, startRow + endRow + 22, 21, startRow + endRow + 22)
 
         startRow += 28
 
-        sheet.addCell(Label(1, startRow, "РАБОТУ СДАЛ:"))
-        sheet.addCell(Label(1, startRow + 1, "от Подрядчика:"))
-        sheet.addCell(Label(1, startRow + 2, "Технический директор"))
-        sheet.addCell(Label(1, startRow + 4, "_____________________ Логинов В.А"))
-        sheet.addCell(Label(1, startRow + 8, "«_____»____________ $year г."))
+        sheet.addCell(Label(1, startRow + endRow, "РАБОТУ СДАЛ:"))
+        sheet.addCell(Label(1, startRow + endRow + 1, "от Подрядчика:"))
+        sheet.addCell(Label(1, startRow + endRow + 2, "Технический директор"))
+        sheet.addCell(Label(1, startRow + endRow + 4, "_____________________ Логинов В.А"))
+        sheet.addCell(Label(1, startRow + endRow + 8, "«_____»____________ $year г."))
 
-        sheet.addCell(Label(29, startRow, "РАБОТУ ПРИНЯЛ:", alignmentRight))
-        sheet.addCell(Label(29, startRow + 1, "от Заказчика:", alignmentRight))
-        sheet.addCell(Label(29, startRow + 2, "Начальник отдела ЭРП", alignmentRight))
-        sheet.addCell(Label(29, startRow + 4, "_____________________ Кузин Н.К", alignmentRight))
-        sheet.addCell(Label(29, startRow + 8, "«_____»____________ $year г.", alignmentRight))
+        sheet.addCell(Label(29, startRow + endRow, "РАБОТУ ПРИНЯЛ:", alignmentRight))
+        sheet.addCell(Label(29, startRow + endRow + 1, "от Заказчика:", alignmentRight))
+        sheet.addCell(Label(29, startRow + endRow + 2, "Начальник отдела ЭРП", alignmentRight))
+        sheet.addCell(Label(29, startRow + endRow + 4, "_____________________ Кузин Н.К", alignmentRight))
+        sheet.addCell(Label(29, startRow + endRow + 8, "«_____»____________ $year г.", alignmentRight))
 
     }
 
@@ -514,13 +518,13 @@ class ExcelUtils {
                 sheet.addCell(Label(2, i + 1, Utils.removeSpecialSymbols(Utils.bts["Тип АО"].toString())))
                 sheet.addCell(Label(3, i + 1, Utils.additionalJobs[i][j].jobTitle))
                 sheet.addCell(Label(4, i + 1, Utils.additionalJobs[i][j].unit))
-                sheet.addCell(Label(5, i + 1, Utils.additionalJobs[i][j].count))
+                sheet.addCell(Label(5, i + 1, Utils.additionalJobs[i][j].count!!.toString()))
                 sheet.addCell(Label(6, i + 1, Utils.additionalJobs[i][j].price))
                 sheet.addCell(
                     Label(
                         7,
                         i + 1,
-                        (Utils.additionalJobs[i][j].price.replace(',', '.').replace(" ", "").toDouble() * Integer.parseInt(Utils.additionalJobs[i][j].count)).toString()
+                        (Utils.additionalJobs[i][j].price.replace(',', '.').replace(" ", "").toDouble() * Utils.additionalJobs[i][j].count!!).toString()
                     )
                 )
             }
@@ -553,5 +557,72 @@ class ExcelUtils {
         }
 
         return wb
+    }
+
+    fun generateTabel(wb: WritableWorkbook){
+        val sheet = wb.createSheet("Табель", 0)
+
+        val border = WritableCellFormat()
+        border.setBorder(Border.ALL, BorderLineStyle.MEDIUM)
+        border.setFont(WritableFont(Font.ARIAL, 8))
+        border.wrap = true
+
+        sheet.addCell(Label(0, 4, "Дата", border))
+        sheet.addCell(Label(1, 4, "ФИО бригадира", border))
+        sheet.addCell(Label(6, 4, "ФИО монтажника", border))
+        sheet.addCell(Label(11, 4, "Адрес", border))
+        sheet.addCell(Label(16, 4, "Тип работ", border))
+        sheet.addCell(Label(27, 4, "Единица измерения", border))
+        sheet.addCell(Label(28, 4, "Кол-во", border))
+
+        sheet.mergeCells(1, 4, 5, 4)
+        sheet.mergeCells(6, 4, 10, 4)
+        sheet.mergeCells(11, 4, 15, 4)
+        sheet.mergeCells(16, 4, 26, 4)
+
+        val date = SimpleDateFormat("dd/MM/YYYY").format(Date())
+        val fioBrig = Utils.user.name
+        val fioMon = Utils.partner!!.name
+
+        val startRow = 5
+        for(i in 0 until Utils.additionalJobs.size){
+            for(j in 0 until Utils.additionalJobs[i].size){
+                sheet.addCell(Label(0, startRow, date, border))
+                sheet.addCell(Label(1, startRow, fioBrig, border))
+                sheet.addCell(Label(6, startRow, fioMon, border))
+                sheet.addCell(Label(11, startRow,  Utils.removeSpecialSymbols(Utils.bts["Адрес"].toString()) + ", " + Utils.removeSpecialSymbols(Utils.bts["Район"].toString()), border))
+                sheet.addCell(Label(16, startRow, Utils.additionalJobs[i][j].jobTitle, border))
+                sheet.addCell(Label(27, startRow, Utils.additionalJobs[i][j].unit, border))
+                sheet.addCell(Label(28, startRow, Utils.additionalJobs[i][j].number, border))
+
+                sheet.mergeCells(1, startRow, 5, startRow)
+                sheet.mergeCells(6, startRow, 10, startRow)
+                sheet.mergeCells(11, startRow, 15, startRow)
+                sheet.mergeCells(16, startRow, 26, startRow)
+            }
+        }
+
+        wb.write()
+        wb.close()
+
+        DatabaseUtils.uploadTabel()
+    }
+
+    companion object{
+        fun bytesToWb(bytes: ByteArray): WritableWorkbook{
+            val file  = File(getExternalStorageDirectory(), "reports/${Utils.user.name}.xls")
+
+            if (file.exists()) {
+                file.delete()
+            }
+            val wbSettings = WorkbookSettings()
+            wbSettings.useTemporaryFileDuringWrite = true
+
+            val fos= FileOutputStream(file.path)
+
+            fos.write(bytes)
+            fos.close()
+            return Workbook.createWorkbook(file, wbSettings)
+        }
     }
 }

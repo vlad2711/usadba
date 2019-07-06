@@ -2,6 +2,7 @@ package com.vkram2711.usadba.utils
 
 import com.vkram2711.usadba.models.BufferReportModel
 import com.vkram2711.usadba.models.Job
+import com.vkram2711.usadba.models.User
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -13,7 +14,9 @@ class Utils {
         var additionalJobs = arrayOf(ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(), ArrayList<Job>(),ArrayList<Job>())
         lateinit var reports: Array<BufferReportModel?>
         lateinit var bts: Map<String, Any>
-
+        lateinit var users: ArrayList<User>
+        lateinit var user: User
+        var partner: User? = null
 
         fun removeSpecialSymbols(string: String): String{
             return string.replace("%2E", ".", false).replace("%2F", "/", false)
@@ -27,7 +30,7 @@ class Utils {
                 "АО" -> 3
                 "Мачты" -> 4
                 "Фидерный мост" -> 5
-                else -> 5
+                else -> 6
             }
         }
 
@@ -39,7 +42,8 @@ class Utils {
                  3-> "АО"
                  4-> "Мачты"
                  5-> "Фидерный мост"
-                else -> "Благоустройство"
+
+                else -> "РВР"
             }
         }
 

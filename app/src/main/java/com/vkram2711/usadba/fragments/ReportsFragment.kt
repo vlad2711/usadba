@@ -10,8 +10,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vkram2711.usadba.R
+import com.vkram2711.usadba.activity.ReportActivity
 import com.vkram2711.usadba.adapters.ReportAdapter
 import com.vkram2711.usadba.models.Job
+import com.vkram2711.usadba.utils.ExcelUtils
 import com.vkram2711.usadba.utils.Utils
 import kotlinx.android.synthetic.main.report_fragment.view.*
 import org.greenrobot.eventbus.EventBus
@@ -38,6 +40,13 @@ class ReportsFragment: Fragment() {
     private fun userInterfaceInit(view: View, category: Int){
         view.reports.layoutManager = LinearLayoutManager(context)
         view.reports.adapter = ReportAdapter(category)
+        view.next.setOnClickListener {
+            (activity as ReportActivity).onChange(category)
+        }
+
+        if(category == 5){
+            view.next.text = "Сохранить"
+        }
     }
 
 
